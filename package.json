@@ -1,0 +1,27 @@
+{
+  "name": "onpyrunner",
+  "version": "1.0.0",
+  "description": "Online Python 실행기입니다. 최신 버젼 지원 및 Python3과 Pypy3을 모두 지원합니다.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ljweel/OnPyRunner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/ljweel/OnPyRunner/issues"
+  },
+  "homepage": "https://github.com/ljweel/OnPyRunner#readme",
+  "dependencies": {
+    "bullmq": "^5.66.4",
+    "express": "^5.2.1",
+    "redis": "^5.10.0"
+  }
+}
