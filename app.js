@@ -1,22 +1,17 @@
-import express from 'express';
-
+const express = require('express');
+const { runCode } = require('./runCode');
 const app = express();
 app.use(express.json());
-app.listen(3000);
+app.listen(3000, ()=> {
+    console.log('Server is running on port 3000');
+});
 
 app.post('/api/run', async (req, res) => {
     const { code, input } = req.body;
     
-    // TODO: Python 코드 실행 로직 구현
-    // 1. Sandbox 생성
-    // 2. 코드 실행
-    // 3. 결과 반환
+    const result = runCode({ code, input });
     
-    res.json({
-        stdout: '',
-        stderr: '',
-        exitCode: 0,
-    });
+    res.json(result);
 });
 
 
