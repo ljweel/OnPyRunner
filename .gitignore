@@ -1,0 +1,4 @@
+memory-bank/
+.venv314/
+*.pyc
+__pycache__/
