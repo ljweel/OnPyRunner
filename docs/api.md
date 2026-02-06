@@ -21,7 +21,7 @@ Submit a new execution job
 {
     "language": "python",
     "source_code": "print('Hello, World!')",
-    "input": "",
+    "stdin": "",
     "limits": {
         "cpu_time_ms": 3000,
         "memory_mb": 128
@@ -50,7 +50,7 @@ Submit a new execution job
 }
 ```
 
-### Response (COMPLETED-SUCCESS)
+### Response (COMPLETED)
 
 ```json
 {
@@ -61,17 +61,20 @@ Submit a new execution job
         "stdout": "hello world\n",
         "stderr": "",
         "exit_code": 0,
-        "execution_time_ms": 42
+        "usage_info": {
+            "cpu_time_ms": 32,
+            "wall_time_ms": 45,
+        }
     }
 }
 ```
 
-### Response (COMPLETED-FAILED)
+### Response (FAILED)
 
-```json
+```json 
 {
     "job_id": "...",
-    "status": "FAILD",
-    "reason": "Time Limit Exceeded(TLE)"
+    "status": "FAILED",
+    "reason": "System Error"
 }
 ```

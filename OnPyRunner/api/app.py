@@ -2,18 +2,19 @@
 from fastapi import FastAPI, HTTPException
 from models.request import ExecuteRequest
 from models.payload import JobExecutionPayload
-from models.response import JobResponse, PendingJobResponse, RunningJobResponse, CompletedJobResponse, FailedJobResponse
+from models.response import JobResponse, PendingJobResponse
 from models.common import Limits
 import uuid, json
 import redis
+
 app = FastAPI()
 
-redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+redis_client = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
 if redis_client.ping():
-    print("Redis connected")
+    print("Redis connected to app")
 else:
-    print("Redis not connected")
+    print("Redis not connected to app")
 
 
 @app.post("/execute", response_model=PendingJobResponse)
@@ -25,12 +26,12 @@ async def execute(request: ExecuteRequest):
         job_id=job_id,
         language=request.language,
         source_code=request.source_code,
-        stdin=request.stdin,
+        stdin=request.stdin or "",
         limits=request.limits or Limits()
     )
     # enqueue job to redis queue
     redis_client.lpush(
-        "queue:job_execution",  # queue name
+        "queue:job_queue",  # queue name
         execution_payload.model_dump_json()  # payload to json
     )
 
