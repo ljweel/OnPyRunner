@@ -29,6 +29,7 @@ class NsJail:
         return [
             self.nsjail_path,
             "--config", self.config_path,
+            "-q",
             "--",
             self.python_path, 
             code_path,

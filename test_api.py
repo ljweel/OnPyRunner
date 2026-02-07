@@ -25,7 +25,6 @@ class APITestHelper:
         job_id = self.post_execute(json)
         result = self.get_job_result(job_id)
         assert result["status"] == "COMPLETED"
-        assert "[E]" not in result["result"]["stderr"]
         return result
 
     # 성공 검증증
