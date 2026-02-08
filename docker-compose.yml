@@ -22,9 +22,9 @@ services:
         - action: restart
           path: ./models
           target: /app/models
-        # requirements.txt 변경시 재빌드
+        # requirements/api-server.txt 변경시 재빌드
         - action: rebuild
-          path: ./requirements.txt
+          path: ./requirements/api-server.txt
 
   worker:
     privileged: true
@@ -53,9 +53,9 @@ services:
           path: ./models
         - action: restart
           path: ./nsjail
-        # requirements.txt나 설정 파일 변경시 재빌드
+        # requirements/worker.txt나 설정 파일 변경시 재빌드
         - action: rebuild
-          path: ./requirements.txt
+          path: ./requirements/worker.txt
         - action: rebuild
           path: ./nsjail/nsjail.cfg
   redis:

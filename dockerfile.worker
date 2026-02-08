@@ -35,8 +35,8 @@ RUN apt-get update && apt-get install -y \
 # 빌드된 nsjail 바이너리 복사
 COPY --from=builder /nsjail/nsjail /usr/bin/nsjail
 # 소스 복사
-COPY requirements.txt .
-RUN uv pip install --system -r requirements.txt
+COPY requirements/worker.txt .
+RUN uv pip install --system -r requirements/worker.txt
 COPY . .
 
 

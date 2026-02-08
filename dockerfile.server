@@ -6,8 +6,8 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 
 # 의존성 복사 & 설치
-COPY requirements.txt .
-RUN uv pip install --system -r requirements.txt
+COPY requirements/api-server.txt .
+RUN uv pip install --system -r requirements/api-server.txt
 
 # 소스 복사
 COPY . .
