@@ -13,10 +13,8 @@ class ResultAnalyzer:
             return JobOutcome.SUCCESS
         if exit_code == 1:
             return JobOutcome.RUNTIME_ERROR
-        elif exit_code == 124:
-            return JobOutcome.TIMEOUT
         elif exit_code == 137:
-            return JobOutcome.MEMORY_LIMIT_EXCEEDED
+            return JobOutcome.TIME_LIMIT_EXCEEDED
         else:
             return JobOutcome.UNKNOWN_ERROR
     
