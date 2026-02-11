@@ -131,6 +131,3 @@ def test_block_proc():
             while 1: os.fork()"""),
         }
     )
-
-def test_tmp():
-    1

@@ -14,6 +14,9 @@ services:
       - ./OnPyRunner:/app/OnPyRunner
       - ./models:/app/models
     command: ["uvicorn", "OnPyRunner.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+    
     develop:
       watch:
         - action: restart
@@ -28,6 +31,7 @@ services:
 
   worker:
     privileged: true
+    cgroup: host
     build:
       context: .
       dockerfile: dockerfile.worker
@@ -42,6 +46,9 @@ services:
       - ./models:/app/models
       - ./nsjail:/app/nsjail
     command: ["python", "worker.py"]
+
+
+
     develop:
       watch:
         # Python 파일 변경시 컨테이너 재시작
