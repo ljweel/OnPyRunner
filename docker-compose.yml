@@ -32,7 +32,7 @@ services:
   
   tunnel:
     image: cloudflare/cloudflared:latest
-    container_name: cloudflared-tunnel
+    container_name: OnPyRunner-tunnel
     restart: always
     profiles:
       - tunnel
