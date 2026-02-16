@@ -4,3 +4,4 @@ memory-bank/
 __pycache__/
 .pytest_cache/
 local*
+.env
