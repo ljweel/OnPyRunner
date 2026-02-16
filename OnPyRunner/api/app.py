@@ -49,7 +49,7 @@ async def execute(request: ExecuteRequest):
 @app.get("/jobs/{job_id}", response_model=JobResponse, response_model_exclude_none=True)
 async def get_job(job_id: str):
 
-    # todo : get job from redis
+    # get job from redis
     job_data = redis_client.get(f"job:{job_id}")
     if not job_data:
         raise HTTPException(status_code=404, detail="Job not found")
