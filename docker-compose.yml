@@ -11,7 +11,10 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     command: ["uvicorn", "OnPyRunner.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
-  
+    networks:
+      - ljweel-dev-network
+
+
   worker:
     privileged: true
     stop_grace_period: 1s
@@ -30,5 +33,13 @@ services:
         limits:
           cpus: 1.2
   
+  
   redis:
     image: redis:7
+
+
+
+networks:
+  ljweel-dev-network:
+    external: true
+    name: ljweel-dev-network
