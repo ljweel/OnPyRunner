@@ -7,3 +7,13 @@ pytest test_api.py -vv
 or
 pytest -vv
 ```
+
+## worker N개
+```bash
+docker compose up -d --scale worker=N
+```
+
+## docker compose 개발용
+```bash
+docker compose -f docker-compose.dev.yml up -d --build
+```
