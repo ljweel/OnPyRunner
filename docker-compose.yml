@@ -1,5 +1,6 @@
 services:
   api:
+    container_name: onpyrunner-api
     build:
       context: .
       dockerfile: dockerfile.server
@@ -16,6 +17,8 @@ services:
 
 
   worker:
+    networks:
+      - ljweel-dev-network
     privileged: true
     stop_grace_period: 1s
     cgroup: host
@@ -33,9 +36,11 @@ services:
         limits:
           cpus: 1.2
   
-  
+
   redis:
     image: redis:7
+    networks:
+      - ljweel-dev-network
 
 
 
