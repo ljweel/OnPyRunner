@@ -11,6 +11,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     command: ["uvicorn", "OnPyRunner.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+  
   worker:
     privileged: true
     stop_grace_period: 1s
@@ -28,15 +29,6 @@ services:
       resources:
         limits:
           cpus: 1.2
+  
   redis:
     image: redis:7
-  
-  tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: OnPyRunner-tunnel
-    restart: always
-    profiles:
-      - tunnel
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-    command: tunnel run
