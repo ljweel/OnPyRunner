@@ -1,5 +1,6 @@
 # app.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from models.request import ExecuteRequest
 from models.payload import JobExecutionPayload
 from models.response import JobResponse, PendingJobResponse
@@ -8,6 +9,20 @@ import uuid, json
 import redis
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5500",
+    "https://run.ljweel.dev",
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False, 
+     allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 redis_client = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
