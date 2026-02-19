@@ -12,6 +12,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5500",
+    "http://127.0.0.1:5500",
     "https://run.ljweel.dev",
 ]
 
@@ -20,7 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=False, 
-     allow_methods=["GET", "POST"],
+     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 
