@@ -24,10 +24,8 @@ jobs:
       - name: Execute Pull on Remote Server
         run: |
           ssh -i ~/private-key.pem -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-            cd my-web/
-            git pull origin main
-            cd ../infra/
+            cd OnPyRunner/
             git pull origin main
             docker compose down
-            docker compose up -d --build
+            docker compose up -d --build --scale worker=2
           EOF
