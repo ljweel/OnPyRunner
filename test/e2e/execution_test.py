@@ -2,9 +2,8 @@ import requests
 import time
 from textwrap import dedent
 
-DEBUG = False
 
-class APITestHelper:
+class E2ETestHelper:
     def __init__(self, base_url):
         self.base_url = base_url
     
@@ -55,7 +54,7 @@ class APITestHelper:
 
 
 BASE_URL = "http://localhost:8000"
-helper = APITestHelper(BASE_URL)
+helper = E2ETestHelper(BASE_URL)
 
 def test_addition():
     # Hello World 출력 검증
@@ -128,6 +127,22 @@ def test_block_proc():
             "language": "python",
             "source_code": dedent("""
             import os
-            while 1: os.fork()"""),
+            while 1: os.fork()
+            """),
+        }
+    )
+
+def test_block_thread():
+    helper.assert_runtime_error(
+        json={
+            "language": "python",
+            "source_code": dedent("""
+            import threading
+            def worker():
+                while True:
+                    pass
+            t = threading.Thread(target=worker)
+            t.start()
+            """),
         }
     )
