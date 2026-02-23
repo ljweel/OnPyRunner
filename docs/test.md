@@ -1,7 +1,7 @@
-## 테스트해보는 법
+## 로컬에서 테스트해보는 법
 ```bash
-docker compose up -d --build
-docker comopose watch
+docker compose -f docker-compose.dev.yml up -d --build
+docker comopose -f docker-compose.dev.yml watch
 
 pytest test_api.py -vv
 or
