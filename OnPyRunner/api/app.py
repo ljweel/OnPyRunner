@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from models.request import ExecuteRequest
 from models.payload import JobExecutionPayload
 from models.response import JobResponse, PendingJobResponse
-from models.common import Limits
 import uuid, json
 import redis
 
@@ -43,7 +42,6 @@ async def execute(request: ExecuteRequest):
         language=request.language,
         source_code=request.source_code,
         stdin=request.stdin or "",
-        limits=request.limits or Limits()
     )
     # enqueue job to redis queue
     redis_client.lpush(

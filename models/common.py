@@ -3,10 +3,9 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 from enum import Enum
 
-# 작업 시간/메모리 제한
-class Limits(BaseModel):
-    cpu_time_ms: int = Field(default=3000, ge=100, le=3000, description="CPU 시간 제한 (ms) 최소 100ms, 최대 3000ms")
-    memory_mb: int = Field(default=128, ge=1, le=128, description="메모리 제한 (MB) 최소 1MB, 최대 128MB")
+class Language(str, Enum):
+    python = "python"
+
 
 # 작업 상태
 class JobStatus(str, Enum):
