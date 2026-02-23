@@ -1,0 +1,33 @@
+name: OnPyRunner deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create SSH Key
+        run: |
+          echo "${{ secrets.SSH_PRIV_KEY }}" > ~/private-key.pem
+          chmod 600 ~/private-key.pem
+
+      - name: Add known host
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.PORT }} ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Execute Pull on Remote Server
+        run: |
+          ssh -i ~/private-key.pem -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+            cd my-web/
+            git pull origin main
+            cd ../infra/
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+          EOF
