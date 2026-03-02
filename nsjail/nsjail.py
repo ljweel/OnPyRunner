@@ -1,9 +1,12 @@
 import subprocess, shutil
 from pathlib import Path
-from typing import Sequence, Iterable
+from OnPyRunner.logging.init import setup
 from models.common import UsageInfo
 import time, resource
 from nsjail.result import NsJailResult
+from typing import Sequence, Iterable
+
+log = setup('nsjail')
 
 
 class NsJail:
@@ -41,6 +44,7 @@ class NsJail:
             start_wall_time = time.perf_counter()
             start_cpu_time = resource.getrusage(resource.RUSAGE_CHILDREN)
 
+            log.info("usercode start", extra={"jobId": self.job_id})
             result = subprocess.run(
                 cmd,
                 stdin=f,
@@ -49,6 +53,7 @@ class NsJail:
                 text=True,
                 timeout = 6,
             )
+            log.info("usercode end", extra={"jobId": self.job_id})
 
             end_wall_time = time.perf_counter()
             end_cpu_time = resource.getrusage(resource.RUSAGE_CHILDREN)

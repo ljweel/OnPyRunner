@@ -6,6 +6,8 @@ from models.payload import JobExecutionPayload
 from models.response import JobResponse, PendingJobResponse
 import uuid, json
 import redis
+from OnPyRunner.logging.init import setup
+
 
 app = FastAPI()
 
@@ -32,10 +34,16 @@ else:
     print("Redis not connected to app")
 
 
+log = setup("api_server")
+
+
 @app.post("/execute", response_model=PendingJobResponse)
 async def execute(request: ExecuteRequest):
+
     # create job id
     job_id = str(uuid.uuid4())
+    log.info("job created", extra={"jobId": job_id})
+
     # create execution payload
     execution_payload = JobExecutionPayload(
         job_id=job_id,
@@ -57,6 +65,8 @@ async def execute(request: ExecuteRequest):
         f"job:{job_id}",  # job key
         pending_job_response.model_dump_json()  # response to json
     )
+
+    log.info("job enqueued", extra={"jobId": job_id})
     return pending_job_response
 
 

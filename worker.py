@@ -4,6 +4,8 @@ from nsjail.result import NsJailResult
 import redis
 import json
 from OnPyRunner.utils.analyzer import ResultAnalyzer
+from OnPyRunner.logging.init import setup
+
 
 redis_client = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
@@ -11,6 +13,10 @@ if redis_client.ping():
     print("Redis connected to worker")
 else:
     print("Redis not connected to worker")
+
+log = setup("worker")
+
+
 
 
 def run_sandboxed_task(job_id: str, source_code: str, stdin: str) -> NsJailResult:
@@ -25,6 +31,8 @@ def worker_loop():
         source_code = execution_payload_dict['source_code']
         stdin = execution_payload_dict['stdin']
 
+        log.info("job dequeued", extra={"jobId": job_id})
+
         running_job_response = RunningJobResponse(job_id=job_id)
         # save job status in redis
         redis_client.set(
@@ -32,15 +40,20 @@ def worker_loop():
             running_job_response.model_dump_json()  # response to json
         )
         try: 
+            log.info("sandbox start", extra={"jobId": job_id})
             nsjail_result = run_sandboxed_task(job_id, source_code, stdin)
         except Exception as e:
             # infrastructure error
             failed_job_response = FailedJobResponse(job_id=job_id, reason=str(e))
             redis_client.set(f"job:{job_id}", failed_job_response.model_dump_json())
             exit(f"Failed to execute job{job_id}: {e}")
+        finally:
+            log.info("sandbox end", extra={"jobId": job_id})
 
-        completed_job_response = ResultAnalyzer().analyze(job_id, nsjail_result) 
+        completed_job_response = ResultAnalyzer().analyze(job_id, nsjail_result)
+
         redis_client.set(f"job:{job_id}", completed_job_response.model_dump_json())
+        log.info("result analysed", extra={"jobId": job_id})
 
 
 if __name__ == "__main__":
