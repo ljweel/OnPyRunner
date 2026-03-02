@@ -98,3 +98,62 @@ sequenceDiagram
         API-->>Client: status
     end
 ```
+
+
+## run.ljweel.dev System Architecture
+
+```mermaid
+flowchart LR
+
+    %% =========================
+    %% Internet Layer
+    %% =========================
+    subgraph L1 [Internet Layer]
+        Client["Client (Browser)"]
+    end
+
+    %% =========================
+    %% Edge Layer
+    %% =========================
+    subgraph L2 [Edge Layer]
+        CF["Cloudflare (DNS + CDN + DDoS)"]
+    end
+
+    %% =========================
+    %% Application Layer
+    %% =========================
+    subgraph L3 [Application Layer]
+        Nginx["NGINX (Reverse Proxy)"]
+        API["FastAPI (Stateless API)"]
+    end
+
+    %% =========================
+    %% Internal Processing Layer
+    %% =========================
+    subgraph L4 [Internal Processing Layer]
+        Redis[("Redis (Job Queue/State Store)")]
+        Worker["Worker Pool (Consumer)"]
+    end
+
+    %% =========================
+    %% Isolated Sandbox Layer
+    %% =========================
+    subgraph L5 [Isolated Sandbox Layer]
+        NsJail["NsJail Sandbox"]
+        Python["Python Runtime"]
+    end
+
+
+
+    %% Connections
+    Client --> CF
+    CF --> Nginx
+    Nginx --> API
+    
+    API -- "Push Job" --> Redis
+    Worker -- "Fetch Job" --> Redis
+    
+    Worker --> NsJail
+    NsJail --> Python
+
+```
