@@ -1,7 +1,10 @@
 # models/common.py
 from __future__ import annotations
-from pydantic import BaseModel, Field
+
 from enum import Enum
+
+from pydantic import BaseModel, Field
+
 
 class Language(str, Enum):
     python = "python"
@@ -14,10 +17,12 @@ class JobStatus(str, Enum):
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
 
+
 # 작업 기본 모델
 class JobBase(BaseModel):
     job_id: str = Field(..., description="작업 ID")
     status: JobStatus = Field(..., description="작업 상태")
+
 
 # 작업 결과 모델
 class JobResult(BaseModel):
@@ -26,6 +31,7 @@ class JobResult(BaseModel):
     stderr: str = Field(..., description="표준 에러")
     exit_code: int = Field(..., description="종료 코드")
     usage_info: UsageInfo = Field(..., description="사용 정보")
+
 
 # 사용 정보 모델
 class UsageInfo(BaseModel):

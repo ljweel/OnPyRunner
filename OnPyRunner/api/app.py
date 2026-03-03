@@ -1,13 +1,15 @@
 # app.py
+import json
+import uuid
+
+import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models.request import ExecuteRequest
-from models.payload import JobExecutionPayload
-from models.response import JobResponse, PendingJobResponse
-import uuid, json
-import redis
-from OnPyRunner.logging.init import setup
 
+from models.payload import JobExecutionPayload
+from models.request import ExecuteRequest
+from models.response import JobResponse, PendingJobResponse
+from OnPyRunner.logging.init import setup
 
 app = FastAPI()
 
@@ -21,8 +23,8 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False, 
-     allow_methods=["GET", "POST", "OPTIONS"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 
@@ -54,7 +56,7 @@ async def execute(request: ExecuteRequest):
     # enqueue job to redis queue
     redis_client.lpush(
         "queue:job_queue",  # queue name
-        execution_payload.model_dump_json()  # payload to json
+        execution_payload.model_dump_json(),  # payload to json
     )
 
     # create job response
@@ -63,7 +65,7 @@ async def execute(request: ExecuteRequest):
     # save job status in redis
     redis_client.set(
         f"job:{job_id}",  # job key
-        pending_job_response.model_dump_json()  # response to json
+        pending_job_response.model_dump_json(),  # response to json
     )
 
     log.info("job enqueued", extra={"jobId": job_id})
@@ -74,7 +76,7 @@ async def execute(request: ExecuteRequest):
 async def get_job(job_id: str):
 
     # get job from redis
-    job_data = redis_client.get(f"job:{job_id}")
+    job_data = await redis_client.get(f"job:{job_id}")
     if not job_data:
         raise HTTPException(status_code=404, detail="Job not found")
     return json.loads(job_data)

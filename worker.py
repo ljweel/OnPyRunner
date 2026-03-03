@@ -1,11 +1,12 @@
-from models.response import RunningJobResponse, FailedJobResponse
+import json
+
+import redis
+
+from models.response import FailedJobResponse, RunningJobResponse
 from nsjail.nsjail import NsJail
 from nsjail.result import NsJailResult
-import redis
-import json
-from OnPyRunner.utils.analyzer import ResultAnalyzer
 from OnPyRunner.logging.init import setup
-
+from OnPyRunner.utils.analyzer import ResultAnalyzer
 
 redis_client = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
@@ -17,19 +18,19 @@ else:
 log = setup("worker")
 
 
-
-
 def run_sandboxed_task(job_id: str, source_code: str, stdin: str) -> NsJailResult:
     runner = NsJail(job_id)
     return runner.execute(source_code, stdin)
 
+
 def worker_loop():
     while True:
-        _, execution_payload = redis_client.brpop("queue:job_queue")
+        result = redis_client.brpop("queue:job_queue", timeout=0)  # type: ignore
+        _, execution_payload = result  # type: ignore
         execution_payload_dict = json.loads(execution_payload)
-        job_id = execution_payload_dict['job_id']
-        source_code = execution_payload_dict['source_code']
-        stdin = execution_payload_dict['stdin']
+        job_id = execution_payload_dict["job_id"]
+        source_code = execution_payload_dict["source_code"]
+        stdin = execution_payload_dict["stdin"]
 
         log.info("job dequeued", extra={"jobId": job_id})
 
@@ -37,9 +38,9 @@ def worker_loop():
         # save job status in redis
         redis_client.set(
             f"job:{job_id}",  # job key
-            running_job_response.model_dump_json()  # response to json
+            running_job_response.model_dump_json(),  # response to json
         )
-        try: 
+        try:
             log.info("sandbox start", extra={"jobId": job_id})
             nsjail_result = run_sandboxed_task(job_id, source_code, stdin)
         except Exception as e:
@@ -58,6 +59,3 @@ def worker_loop():
 
 if __name__ == "__main__":
     worker_loop()
-
-
-

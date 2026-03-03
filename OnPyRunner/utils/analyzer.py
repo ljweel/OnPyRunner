@@ -1,8 +1,6 @@
+from models.common import JobOutcome, JobResult, JobStatus
+from models.response import CompletedJobResponse, JobResponse
 from nsjail.result import NsJailResult
-from models.common  import JobResult, JobStatus, JobOutcome
-from models.response import JobResponse
-from models.response import CompletedJobResponse
-
 
 
 class ResultAnalyzer:
@@ -17,19 +15,17 @@ class ResultAnalyzer:
             return JobOutcome.TIME_LIMIT_EXCEEDED
         else:
             return JobOutcome.UNKNOWN_ERROR
-    
-
 
     def analyze(self, job_id: str, raw_result: NsJailResult) -> JobResponse:
-        
+
         return CompletedJobResponse(
             job_id=job_id,
-            status=JobStatus.COMPLETED, 
+            status=JobStatus.COMPLETED,
             result=JobResult(
                 outcome=self._result_to_outcome(raw_result),
                 stdout=raw_result.stdout,
-                stderr=raw_result.stderr, 
-                exit_code=raw_result.exit_code, 
-                usage_info=raw_result.usage_info
-            )
+                stderr=raw_result.stderr,
+                exit_code=raw_result.exit_code,
+                usage_info=raw_result.usage_info,
+            ),
         )
