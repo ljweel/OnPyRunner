@@ -1,6 +1,7 @@
 # app.py
 import json
 import uuid
+from typing import cast
 
 import redis
 from fastapi import FastAPI, HTTPException
@@ -76,7 +77,7 @@ async def execute(request: ExecuteRequest):
 async def get_job(job_id: str):
 
     # get job from redis
-    job_data = await redis_client.get(f"job:{job_id}")
+    job_data = cast(str | None, redis_client.get(f"job:{job_id}"))
     if not job_data:
         raise HTTPException(status_code=404, detail="Job not found")
     return json.loads(job_data)
