@@ -12,22 +12,22 @@ class APIValidationHelper:
 BASE_URL = "http://localhost:8000"
 helper = APIValidationHelper(BASE_URL)
 
-MAX_LENGTH = 100000 + 1  # 10KB + 1 byte
+MAX_LENGTH = 100000 + 1  # 100KB + 1 byte
 
 
 def test_source_code_size_limit():
-    # 10KB 초과 소스 코드 검증
-    source_code = f"print('{'A' * MAX_LENGTH}')"  # 10KB 이상의 소스 코드
+    # 100KB 초과 소스 코드 검증
+    source_code = f"print('{'A' * MAX_LENGTH}')"  # 100KB 이상의 소스 코드
     response = helper.post(
         {"language": "python", "source_code": source_code, "stdin": ""}
     )
     assert response.status_code == 422
-    assert "source code exceeds 10KB." in response.text
+    assert "source code exceeds 100KB." in response.text
 
 
 def test_stdin_size_limit():
-    # 10KB 초과 stdin 검증
-    stdin = "A" * MAX_LENGTH  # 10KB 이상의 stdin
+    # 100KB 초과 stdin 검증
+    stdin = "A" * MAX_LENGTH  # 100KB 이상의 stdin
     response = helper.post(
         {
             "language": "python",
@@ -36,7 +36,7 @@ def test_stdin_size_limit():
         }
     )
     assert response.status_code == 422
-    assert "stdin exceeds 10KB." in response.text
+    assert "stdin exceeds 100KB." in response.text
 
 
 def test_valid_request():
