@@ -32,6 +32,7 @@ services:
   worker:
     privileged: true
     cgroup: host
+    restart: on-failure
     build:
       context: .
       dockerfile: dockerfile.worker

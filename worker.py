@@ -1,4 +1,5 @@
 import json
+import sys
 
 import redis
 
@@ -47,7 +48,7 @@ def worker_loop():
             # infrastructure error
             failed_job_response = FailedJobResponse(job_id=job_id, reason=str(e))
             redis_client.set(f"job:{job_id}", failed_job_response.model_dump_json())
-            exit(f"Failed to execute job{job_id}: {e}")
+            sys.exit(1)
         finally:
             log.info("sandbox end", extra={"jobId": job_id})
 

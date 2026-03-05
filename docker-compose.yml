@@ -22,6 +22,7 @@ services:
     privileged: true
     stop_grace_period: 1s
     cgroup: host
+    restart: on-failure
     build:
       context: .
       dockerfile: dockerfile.worker
