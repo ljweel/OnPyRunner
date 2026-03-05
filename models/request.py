@@ -15,11 +15,11 @@ class ExecuteRequest(BaseModel):
     @field_validator("source_code")
     def check_source_size(cls, v):
         if len(v.encode("utf-8")) > MAX_LENGTH:
-            raise ValueError("source code exceeds 10KB.")
+            raise ValueError("source code exceeds 100KB.")
         return v
 
     @field_validator("stdin")
     def check_stdin_size(cls, v):
         if v is not None and len(v.encode("utf-8")) > MAX_LENGTH:
-            raise ValueError("stdin exceeds 10KB.")
+            raise ValueError("stdin exceeds 100KB.")
         return v
