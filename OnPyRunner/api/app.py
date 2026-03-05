@@ -67,6 +67,7 @@ async def execute(request: ExecuteRequest):
     redis_client.set(
         f"job:{job_id}",  # job key
         pending_job_response.model_dump_json(),  # response to json
+        ex=600,  # expire in 10 minutes
     )
 
     log.info("job enqueued", extra={"jobId": job_id})
