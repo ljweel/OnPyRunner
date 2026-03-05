@@ -1,5 +1,3 @@
-memory-bank/
-.venv314/
 *.pyc
 __pycache__/
 .pytest_cache/
