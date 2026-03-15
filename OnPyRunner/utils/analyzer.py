@@ -8,6 +8,13 @@ class ResultAnalyzer:
 
         exit_code = raw_result.exit_code
         stderr = raw_result.stderr
+        stdout_exceeded = raw_result.stdout_exceeded
+        stderr_exceeded = raw_result.stderr_exceeded
+
+        if stdout_exceeded:
+            return JobOutcome.STDOUT_LIMIT_EXCEEDED
+        if stderr_exceeded:
+            return JobOutcome.STDERR_LIMIT_EXCEEDED
         if exit_code == 0:
             return JobOutcome.SUCCESS
         elif exit_code == 1:

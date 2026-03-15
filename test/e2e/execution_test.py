@@ -67,6 +67,13 @@ class E2ETestHelper:
         assert result["result"]["outcome"] == "STDOUT_LIMIT_EXCEEDED"
         assert result["result"]["exit_code"] != 0
 
+    # 표준 에러 초과 검증
+    def assert_stderr_limit_exceeded(self, json):
+        result = self.assert_base_conditions(json)
+        print(result)
+        assert result["result"]["outcome"] == "STDERR_LIMIT_EXCEEDED"
+        assert result["result"]["exit_code"] != 0
+
 
 BASE_URL = "http://localhost:8000"
 helper = E2ETestHelper(BASE_URL)
@@ -191,6 +198,20 @@ def test_stdout_limit_exceeded():
             "source_code": dedent("""
             while True:
                 print("A" * 1000)
+            """),
+        }
+    )
+
+
+def test_stderr_limit_exceeded():
+    # 표준 에러 제한 검증
+    helper.assert_stderr_limit_exceeded(
+        json={
+            "language": "python",
+            "source_code": dedent("""
+            import sys
+            while True:
+                print("A" * 1000, file=sys.stderr)
             """),
         }
     )

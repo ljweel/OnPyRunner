@@ -2,14 +2,18 @@ import resource
 import shutil
 import subprocess
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import IO, Iterable, Sequence
 
 from models.common import UsageInfo
 from nsjail.result import NsJailResult
 from OnPyRunner.logging.init import setup
 
 log = setup("nsjail")
+
+MAX_STDOUT_SIZE = 128 * 1024  # 128KB
+MAX_STDERR_SIZE = 128 * 1024  # 128KB
 
 
 class NsJail:
@@ -31,6 +35,29 @@ class NsJail:
             f.write(stdin)
         return code_path, stdin_path
 
+    def _consume_stream(
+        self, proc: subprocess.Popen, stream: IO[bytes] | None, max_size: int
+    ) -> tuple[str, bool]:
+        if stream is None:
+            raise RuntimeError("Stream is None")
+        output = []
+        output_size = 0
+        is_output_exceeded = False
+        while True:
+            chunk = stream.read(4096)
+            if not chunk:
+                break
+            output_size += len(chunk)
+            output.append(chunk)
+            if output_size > max_size:
+                proc.terminate()
+                is_output_exceeded = True
+                break
+        return (
+            b"".join(output)[:max_size].decode("utf-8", errors="replace"),
+            is_output_exceeded,
+        )
+
     def _build_command(self, code_path: Path) -> Sequence[str | Path]:
         return [
             self.nsjail_path,
@@ -49,14 +76,20 @@ class NsJail:
             start_cpu_time = resource.getrusage(resource.RUSAGE_CHILDREN)
 
             log.info("usercode start", extra={"jobId": self.job_id})
-            result = subprocess.run(
-                cmd,
-                stdin=f,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                timeout=6,
+            result = subprocess.Popen(
+                cmd, stdin=f, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                stdout_future = executor.submit(
+                    self._consume_stream, result, result.stdout, MAX_STDOUT_SIZE
+                )
+                stderr_future = executor.submit(
+                    self._consume_stream, result, result.stderr, MAX_STDERR_SIZE
+                )
+                stdout, stdout_exceeded = stdout_future.result()
+                stderr, stderr_exceeded = stderr_future.result()
+            result.wait(timeout=6)
+
             log.info("usercode end", extra={"jobId": self.job_id})
 
             end_wall_time = time.perf_counter()
@@ -73,10 +106,12 @@ class NsJail:
             usage_info = UsageInfo(cpu_time_ms=cpu_time_ms, wall_time_ms=wall_time_ms)
 
         return NsJailResult(
-            stdout=result.stdout,
-            stderr=result.stderr,
+            stdout=stdout,
+            stderr=stderr,
             exit_code=result.returncode,
             usage_info=usage_info,
+            stdout_exceeded=stdout_exceeded,
+            stderr_exceeded=stderr_exceeded,
         )
 
     def _cleanup(self):
