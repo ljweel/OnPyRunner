@@ -24,7 +24,7 @@ class E2ETestHelper:
             time.sleep(0.1)
         raise TimeoutError(f"Job {job_id} did not complete in time")
 
-    # 모든 테스트의 공통 전제조건 검증증
+    # 모든 테스트의 공통 전제조건 검증
     def assert_base_conditions(self, json):
         job_id = self.post_execute(json)
         result = self.get_job_result(job_id)
@@ -38,18 +38,25 @@ class E2ETestHelper:
         assert result["result"]["outcome"] == "SUCCESS"
         assert result["result"]["exit_code"] == 0
 
-    # 런타임 에러 검증증
+    # 런타임 에러 검증
     def assert_runtime_error(self, json):
         result = self.assert_base_conditions(json)
         print(result)
         assert result["result"]["outcome"] == "RUNTIME_ERROR"
         assert result["result"]["exit_code"] != 0
 
-    # 시간 초과 검증증
-    def assert_timeout(self, json):
+    # 시간 초과 검증
+    def assert_time_limit_exceeded(self, json):
         result = self.assert_base_conditions(json)
         print(result)
         assert result["result"]["outcome"] == "TIME_LIMIT_EXCEEDED"
+        assert result["result"]["exit_code"] != 0
+
+    # 메모리 초과 검증
+    def assert_memory_limit_exceeded(self, json):
+        result = self.assert_base_conditions(json)
+        print(result)
+        assert result["result"]["outcome"] == "MEMORY_LIMIT_EXCEEDED"
         assert result["result"]["exit_code"] != 0
 
 
@@ -92,19 +99,32 @@ def test_network_isolated():
     )
 
 
-# def test_timeout_cpu_time():
-#     # CPU 사용 시간 초과 검증
-#     helper.assert_timeout(
-#         json={
-#             "language": "python",
-#             "source_code": "while True: pass",
-#         }
-#     )
+def test_timeout_cpu_time():
+    # CPU 사용 시간 초과 검증
+    helper.assert_time_limit_exceeded(
+        json={
+            "language": "python",
+            "source_code": "while True: pass",
+        }
+    )
+
+
+def test_timeout_wall_time():
+    # 전체 실행 시간 초과 검증
+    helper.assert_time_limit_exceeded(
+        json={
+            "language": "python",
+            "source_code": dedent("""
+            import time
+            time.sleep(10)
+            """),
+        }
+    )
 
 
 def test_memory_limit_exceeded():
     # 메모리 초과 검증
-    helper.assert_runtime_error(
+    helper.assert_memory_limit_exceeded(
         json={
             "language": "python",
             "source_code": "a = [1] * 1000000000; print(a)",

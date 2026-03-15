@@ -7,10 +7,14 @@ class ResultAnalyzer:
     def _result_to_outcome(self, raw_result: NsJailResult) -> JobOutcome:
 
         exit_code = raw_result.exit_code
+        stderr = raw_result.stderr
         if exit_code == 0:
             return JobOutcome.SUCCESS
         if exit_code == 1:
-            return JobOutcome.RUNTIME_ERROR
+            if "MemoryError" in stderr:
+                return JobOutcome.MEMORY_LIMIT_EXCEEDED
+            else:
+                return JobOutcome.RUNTIME_ERROR
         elif exit_code == 137:
             return JobOutcome.TIME_LIMIT_EXCEEDED
         else:
