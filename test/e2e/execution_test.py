@@ -1,6 +1,7 @@
 import time
 from textwrap import dedent
 
+import pytest
 import requests
 
 
@@ -31,7 +32,7 @@ class E2ETestHelper:
         assert result["status"] == "COMPLETED"
         return result
 
-    # 성공 검증증
+    # 성공 검증
     def assert_success(self, json):
         result = self.assert_base_conditions(json)
         print(result)
@@ -57,6 +58,13 @@ class E2ETestHelper:
         result = self.assert_base_conditions(json)
         print(result)
         assert result["result"]["outcome"] == "MEMORY_LIMIT_EXCEEDED"
+        assert result["result"]["exit_code"] != 0
+
+    # 표준 출력 초과 검증
+    def assert_stdout_limit_exceeded(self, json):
+        result = self.assert_base_conditions(json)
+        print(result)
+        assert result["result"]["outcome"] == "STDOUT_LIMIT_EXCEEDED"
         assert result["result"]["exit_code"] != 0
 
 
@@ -99,8 +107,10 @@ def test_network_isolated():
     )
 
 
+@pytest.mark.slow
 def test_timeout_cpu_time():
     # CPU 사용 시간 초과 검증
+    # nsjail time limit: 3초 (wall_time / cpu_time)
     helper.assert_time_limit_exceeded(
         json={
             "language": "python",
@@ -109,8 +119,10 @@ def test_timeout_cpu_time():
     )
 
 
+@pytest.mark.slow
 def test_timeout_wall_time():
     # 전체 실행 시간 초과 검증
+    # nsjail time limit: 3초 (wall_time / cpu_time)
     helper.assert_time_limit_exceeded(
         json={
             "language": "python",
@@ -166,6 +178,19 @@ def test_block_thread():
                     pass
             t = threading.Thread(target=worker)
             t.start()
+            """),
+        }
+    )
+
+
+def test_stdout_limit_exceeded():
+    # 표준 출력 제한 검증
+    helper.assert_stdout_limit_exceeded(
+        json={
+            "language": "python",
+            "source_code": dedent("""
+            while True:
+                print("A" * 1000)
             """),
         }
     )

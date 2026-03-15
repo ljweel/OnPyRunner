@@ -10,11 +10,13 @@ class ResultAnalyzer:
         stderr = raw_result.stderr
         if exit_code == 0:
             return JobOutcome.SUCCESS
-        if exit_code == 1:
+        elif exit_code == 1:
             if "MemoryError" in stderr:
                 return JobOutcome.MEMORY_LIMIT_EXCEEDED
             else:
                 return JobOutcome.RUNTIME_ERROR
+        # 137(SIGKILL): nsjail 설정상 fork/파일I/O가 제한되어
+        # cgroup OOM Kill 가능성이 낮으므로 TLE로 판정
         elif exit_code == 137:
             return JobOutcome.TIME_LIMIT_EXCEEDED
         else:

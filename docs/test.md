@@ -3,7 +3,8 @@
 docker compose -f docker-compose.dev.yml up -d --build
 docker comopose -f docker-compose.dev.yml watch
 
-pytest -vv
+pytest -m "not slow" -> slow test(TLE 검증 test) 제외
+pytest -> 전부 실행
 ```
 
 ## worker N개
