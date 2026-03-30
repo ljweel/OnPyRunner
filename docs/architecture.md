@@ -1,15 +1,25 @@
 ## Overview
 ```mermaid
 flowchart LR
-    Client -->|HTTP Request| API[API Server]
+    %% Request Flow (먼저 선언 → 위쪽 배치)
+    Client -->|POST /execute| API[API Server]
+    API -->|return jobID| Client
     API -->|Enqueue Job| Redis[(Redis Queue)]
     Redis -->|BRPOP| Worker
     Worker -->|Run Code| Sandbox
     Sandbox -->|Result| Worker
     Worker -->|Save Result| RedisResult[(Redis Result Store)]
-    Client -->|Polling| API
-    API -->|Fetch Result| RedisResult
 
+    %% Polling Flow (나중 선언 → 아래쪽 배치)
+    Client -..->|"GET /job/{jobID}"| API
+    API -..->|Fetch Result| RedisResult
+    RedisResult -..->|return Result| API
+    API -..->|return Result| Client
+
+    %% 0~6: Request Flow (파란 실선)
+    linkStyle 0,1,2,3,4,5,6 stroke:#004F90,stroke-width:2px
+    %% 7~10: Polling Flow (주황 점선)
+    linkStyle 7,8,9,10 stroke:#E67E22,stroke-width:2px,stroke-dasharray:5 5
 ```
 
 
@@ -87,6 +97,7 @@ sequenceDiagram
     API-->>Client: return jobId
 
     Redis Queue-->>Worker: BRPOP job_queue
+    Worker->>Redis Storage: SET job:{jobID} = RUNNING
     Worker->>Sandbox: Execute code
     Sandbox-->>Worker: stdout, stderr, exit_code
     Worker->>Redis Storage: SET job:{jobId} = COMPLETED
@@ -94,8 +105,8 @@ sequenceDiagram
     loop Polling
         Client->>API: GET /jobs/{jobId}
         API->>Redis Storage: GET job:{jobId}
-        Redis Storage-->>API: status
-        API-->>Client: status
+        Redis Storage-->>API: return status
+        API-->>Client: return status
     end
 ```
 
