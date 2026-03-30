@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from models.common import UsageInfo
+from OnPyRunner.models.common import UsageInfo
 
 
 class NsJailResult(BaseModel):

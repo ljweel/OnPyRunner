@@ -12,19 +12,13 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./OnPyRunner:/app/OnPyRunner
-      - ./models:/app/models
     command: ["uvicorn", "OnPyRunner.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
 
-
-    
     develop:
       watch:
         - action: restart
           path: ./OnPyRunner
           target: /app/OnPyRunner
-        - action: restart
-          path: ./models
-          target: /app/models
         # requirements/api-server.txt 변경시 재빌드
         - action: rebuild
           path: ./requirements/api-server.txt
@@ -44,10 +38,7 @@ services:
     volumes:
       - ./worker.py:/app/worker.py
       - ./OnPyRunner:/app/OnPyRunner
-      - ./models:/app/models
-      - ./nsjail:/app/nsjail
     command: ["python", "worker.py"]
-
 
     develop:
       watch:
@@ -56,15 +47,11 @@ services:
           path: ./worker.py
         - action: restart
           path: ./OnPyRunner
-        - action: restart
-          path: ./models
-        - action: restart
-          path: ./nsjail
         # requirements/worker.txt나 설정 파일 변경시 재빌드
         - action: rebuild
           path: ./requirements/worker.txt
         - action: rebuild
-          path: ./nsjail/nsjail.cfg
+          path: ./OnPyRunner/nsjail/nsjail.cfg
   redis:
     image: redis:7
   

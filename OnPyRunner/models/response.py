@@ -3,7 +3,7 @@ from typing import Literal, Union
 
 from pydantic import Field
 
-from models.common import JobBase, JobResult, JobStatus
+from OnPyRunner.models.common import JobBase, JobResult, JobStatus
 
 
 class PendingJobResponse(JobBase):

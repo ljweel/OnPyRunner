@@ -7,10 +7,10 @@ import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from models.payload import JobExecutionPayload
-from models.request import ExecuteRequest
-from models.response import JobResponse, PendingJobResponse
-from OnPyRunner.logging.init import setup
+from OnPyRunner.models.payload import JobExecutionPayload
+from OnPyRunner.models.request import ExecuteRequest
+from OnPyRunner.models.response import JobResponse, PendingJobResponse
+from OnPyRunner.logger import setup
 
 app = FastAPI()
 

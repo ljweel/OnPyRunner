@@ -6,9 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import IO, Iterable, Sequence
 
-from models.common import UsageInfo
-from nsjail.result import NsJailResult
-from OnPyRunner.logging.init import setup
+from OnPyRunner.models.common import UsageInfo
+from OnPyRunner.nsjail.result import NsJailResult
+from OnPyRunner.logger import setup
 
 log = setup("nsjail")
 
@@ -18,7 +18,7 @@ MAX_STDERR_SIZE = 128 * 1024  # 128KB
 
 class NsJail:
     def __init__(self, job_id: str):
-        self.config_path: Path = Path("/app/nsjail/nsjail.cfg")
+        self.config_path: Path = Path("/app/OnPyRunner/nsjail/nsjail.cfg")
         self.nsjail_path: Path = Path("/usr/bin/nsjail")
         self.base_sandbox_dir: Path = Path("/sandbox")
         self.python_path: Path = Path("/usr/local/bin/python3")
