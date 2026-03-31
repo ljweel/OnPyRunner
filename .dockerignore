@@ -1,6 +1,11 @@
-memory-bank/
-docs/
-.venv314/
-*.pyc
-__pycache__/
+.git/
+.venv*/
 .pytest_cache/
+__pycache__/
+*.pyc
+docs/
+tests/
+localTest.py
+memory-bank/
+.claude/
+.github/

@@ -23,7 +23,6 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-# uv 설치
 RUN pip install --no-cache-dir uv
 
 # nsjail 실행에 필요한 최소 런타임 라이브러리 설치
@@ -34,15 +33,18 @@ RUN apt-get update && apt-get install -y \
 
 # 빌드된 nsjail 바이너리 복사
 COPY --from=builder /nsjail/nsjail /usr/bin/nsjail
-# 소스 복사
-COPY requirements/worker.txt ./requirements/
-RUN uv pip install --system -r requirements/worker.txt
-COPY . .
+
+# shared 패키지 설치
+COPY shared/ /app/shared/
+RUN uv pip install --system /app/shared/
+
+# Worker 패키지 설치
+COPY worker/ /app/worker/
+RUN uv pip install --system /app/worker/
 
 # cgroup 설정용 entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# 실행 테스트용 (샌드박스 내에서 파이썬 실행)
-CMD ["python3", "worker.py"]
+CMD ["python", "-m", "onpyrunner_worker.main"]

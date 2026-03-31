@@ -3,11 +3,11 @@ import sys
 
 import redis
 
-from OnPyRunner.models.response import FailedJobResponse, RunningJobResponse
-from OnPyRunner.nsjail.nsjail import NsJail
-from OnPyRunner.nsjail.result import NsJailResult
-from OnPyRunner.logger import setup
-from OnPyRunner.utils.analyzer import ResultAnalyzer
+from onpyrunner_shared.models.response import FailedJobResponse, RunningJobResponse
+from onpyrunner_shared.logger import setup
+from onpyrunner_worker.nsjail import NsJail
+from onpyrunner_worker.nsjail.result import NsJailResult
+from onpyrunner_worker.analyzer import ResultAnalyzer
 
 redis_client = redis.Redis(
     host="redis",
