@@ -1,12 +1,10 @@
-# models/request.py
 from pydantic import BaseModel, Field, field_validator
 
-from OnPyRunner.models.common import Language
+from onpyrunner_shared.models.common import Language
 
 MAX_LENGTH = 100000
 
 
-# POST /execute request body model
 class ExecuteRequest(BaseModel):
     language: Language = Field(..., description="언어")
     source_code: str = Field(..., description="소스 코드")

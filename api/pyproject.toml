@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "onpyrunner-api"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "onpyrunner-shared",
+    "fastapi[standard]>=0.113.0",
+    "redis>=7.1.0",
+    "hiredis>=3.3.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/onpyrunner_api"]

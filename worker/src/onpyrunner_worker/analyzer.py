@@ -1,6 +1,6 @@
-from OnPyRunner.models.common import JobOutcome, JobResult, JobStatus
-from OnPyRunner.models.response import CompletedJobResponse, JobResponse
-from OnPyRunner.nsjail.result import NsJailResult
+from onpyrunner_shared.models.common import JobOutcome, JobResult, JobStatus
+from onpyrunner_shared.models.response import CompletedJobResponse, JobResponse
+from onpyrunner_worker.nsjail.result import NsJailResult
 
 
 class ResultAnalyzer:

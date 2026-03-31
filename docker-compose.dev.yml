@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: dockerfile.server
+      dockerfile: api/Dockerfile
     ports:
       - "8000:8000"
     depends_on:
@@ -10,18 +10,16 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-    volumes:
-      - ./OnPyRunner:/app/OnPyRunner
-    command: ["uvicorn", "OnPyRunner.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["uvicorn", "onpyrunner_api.app:app", "--host", "0.0.0.0", "--port", "8000"]
 
     develop:
       watch:
-        - action: restart
-          path: ./OnPyRunner
-          target: /app/OnPyRunner
-        # requirements/api-server.txt 변경시 재빌드
         - action: rebuild
-          path: ./requirements/api-server.txt
+          path: ./api/src
+        - action: rebuild
+          path: ./shared/src
+        - action: rebuild
+          path: ./api/pyproject.toml
 
   worker:
     privileged: true
@@ -29,29 +27,22 @@ services:
     restart: on-failure
     build:
       context: .
-      dockerfile: dockerfile.worker
+      dockerfile: worker/Dockerfile
     depends_on:
       - redis
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-    volumes:
-      - ./worker.py:/app/worker.py
-      - ./OnPyRunner:/app/OnPyRunner
-    command: ["python", "worker.py"]
+    command: ["python", "-m", "onpyrunner_worker.main"]
 
     develop:
       watch:
-        # Python 파일 변경시 컨테이너 재시작
-        - action: restart
-          path: ./worker.py
-        - action: restart
-          path: ./OnPyRunner
-        # requirements/worker.txt나 설정 파일 변경시 재빌드
         - action: rebuild
-          path: ./requirements/worker.txt
+          path: ./worker/src
         - action: rebuild
-          path: ./OnPyRunner/nsjail/nsjail.cfg
+          path: ./shared/src
+        - action: rebuild
+          path: ./worker/pyproject.toml
+
   redis:
     image: redis:7
-  

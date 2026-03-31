@@ -3,7 +3,7 @@ services:
     container_name: onpyrunner-api
     build:
       context: .
-      dockerfile: dockerfile.server
+      dockerfile: api/Dockerfile
     ports:
       - "8000:8000"
     depends_on:
@@ -11,7 +11,7 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-    command: ["uvicorn", "OnPyRunner.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["uvicorn", "onpyrunner_api.app:app", "--host", "0.0.0.0", "--port", "8000"]
     networks:
       - ljweel-dev-network
 
@@ -25,18 +25,18 @@ services:
     restart: on-failure
     build:
       context: .
-      dockerfile: dockerfile.worker
+      dockerfile: worker/Dockerfile
     depends_on:
       - redis
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-    command: ["python", "worker.py"]
+    command: ["python", "-m", "onpyrunner_worker.main"]
     deploy:
       resources:
         limits:
           cpus: 1.2
-  
+
 
   redis:
     image: redis:7
