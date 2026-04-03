@@ -6,8 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import IO, Iterable, Sequence
 
-from onpyrunner_shared.models.common import UsageInfo
 from onpyrunner_shared.logger import setup
+from onpyrunner_shared.models.common import UsageInfo
+
 from onpyrunner_worker.nsjail.result import NsJailResult
 
 log = setup("nsjail")
