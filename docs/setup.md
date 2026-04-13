@@ -11,19 +11,24 @@
 
 ```
 OnPyRunner/
-├── shared/          # 공유 도메인 패키지 (models, logger)
-├── api/             # FastAPI 서비스
-├── worker/          # Worker 서비스 (nsjail 샌드박스)
-├── tests/           # 테스트
+├── shared/              # 공유 도메인 패키지 (models, logger)
+├── api/                 # FastAPI 서비스
+├── worker/              # Worker 서비스 (nsjail 샌드박스)
+├── tests/               # 테스트
+├── docs/                # 프로젝트 문서
 ├── docker-compose.yml
 ├── docker-compose.dev.yml
+├── alembic/             # DB 마이그레이션 (v1.1~)
+├── alembic.ini          # Alembic 설정 (v1.1~)
+├── CHANGELOG.md
+├── CLAUDE.md
 └── entrypoint.sh
 ```
 
 ## Docker 네트워크 생성 (최초 1회)
 
 ```bash
-docker network create ljweel-dev-network
+docker network create [network-name]
 ```
 
 ## 프로덕션 실행
@@ -40,6 +45,24 @@ docker compose -f docker-compose.dev.yml up -d --build
 
 # 파일 변경 감지 (코드 수정 시 자동 재빌드)
 docker compose -f docker-compose.dev.yml watch
+```
+
+## DB 마이그레이션 (v1.1~)
+
+PostgreSQL 컨테이너가 실행 중인 상태에서:
+
+```bash
+# 최신 마이그레이션 적용
+alembic upgrade head
+
+# 새 마이그레이션 생성 (모델 변경 후)
+alembic revision --autogenerate -m "describe change"
+
+# 마이그레이션 히스토리 확인
+alembic history
+
+# 한 단계 롤백
+alembic downgrade -1
 ```
 
 ## Worker 스케일링

@@ -1,10 +1,3 @@
-
-# Base URL
-
-'''
-/api/v1
-'''
-
 # Endpoint
 
 ## 공통 규칙
