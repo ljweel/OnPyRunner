@@ -5,11 +5,10 @@ from typing import cast
 import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
+from onpyrunner_shared.logger import setup
 from onpyrunner_shared.models.payload import JobExecutionPayload
 from onpyrunner_shared.models.request import ExecuteRequest
 from onpyrunner_shared.models.response import JobResponse, PendingJobResponse
-from onpyrunner_shared.logger import setup
 
 app = FastAPI()
 

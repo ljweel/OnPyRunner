@@ -8,6 +8,7 @@ version = "1.0.0"
 requires-python = ">=3.13"
 dependencies = [
     "onpyrunner-shared",
+    "onpyrunner-db",
     "fastapi[standard]>=0.113.0",
     "redis>=7.1.0",
     "hiredis>=3.3.0",
