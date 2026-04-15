@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import redis.asyncio as aioredis
 from onpyrunner_db.service import update_execution
@@ -39,7 +39,7 @@ async def worker_loop(redis_client: Redis, log: logging.Logger):
 
         await update_execution(
             job_id=job_id,
-            worker_picked_at=datetime.now(timezone(timedelta(hours=9))),
+            worker_picked_at=datetime.now(timezone.utc),
             status="RUNNING",
         )
 
@@ -59,14 +59,14 @@ async def worker_loop(redis_client: Redis, log: logging.Logger):
 
             await update_execution(
                 job_id=job_id,
-                execution_started_at=datetime.now(timezone(timedelta(hours=9))),
+                execution_started_at=datetime.now(timezone.utc),
             )
 
             nsjail_result = run_sandboxed_task(job_id, source_code, stdin)
 
             await update_execution(
                 job_id=job_id,
-                execution_finished_at=datetime.now(timezone(timedelta(hours=9))),
+                execution_finished_at=datetime.now(timezone.utc),
             )
         except Exception as e:
             # infrastructure error
@@ -99,7 +99,7 @@ async def worker_loop(redis_client: Redis, log: logging.Logger):
 
         await update_execution(
             job_id=job_id,
-            result_stored_at=datetime.now(timezone(timedelta(hours=9))),
+            result_stored_at=datetime.now(timezone.utc),
             status="COMPLETED",
             outcome=completed_job_response.result.outcome,
             stdout=completed_job_response.result.stdout,

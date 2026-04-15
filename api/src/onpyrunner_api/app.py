@@ -1,6 +1,6 @@
 import json
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import cast
 
 import redis
@@ -43,7 +43,7 @@ log = setup("api_server")
 @app.post("/execute", response_model=PendingJobResponse)
 async def execute(request: ExecuteRequest):
 
-    api_received_at = datetime.now(timezone(timedelta(hours=9)))
+    api_received_at = datetime.now(timezone.utc)
 
     # create job id
     job_id = str(uuid.uuid4())
@@ -63,7 +63,7 @@ async def execute(request: ExecuteRequest):
         stdin=request.stdin or "",
     )
 
-    queue_entered_at = datetime.now(timezone(timedelta(hours=9)))
+    queue_entered_at = datetime.now(timezone.utc)
 
     # enqueue job to redis queue
     redis_client.lpush(
