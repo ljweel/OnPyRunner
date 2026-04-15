@@ -57,15 +57,13 @@ async def worker_loop(redis_client: Redis, log: logging.Logger):
         try:
             log.info("sandbox start", extra={"jobId": job_id})
 
-            await update_execution(
-                job_id=job_id,
-                execution_started_at=datetime.now(timezone.utc),
-            )
+            execution_started_at = datetime.now(timezone.utc)
 
             nsjail_result = run_sandboxed_task(job_id, source_code, stdin)
 
             await update_execution(
                 job_id=job_id,
+                execution_started_at=execution_started_at,
                 execution_finished_at=datetime.now(timezone.utc),
             )
         except Exception as e:
