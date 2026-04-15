@@ -8,6 +8,7 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+      - db
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -32,6 +33,7 @@ services:
       dockerfile: worker/Dockerfile
     depends_on:
       - redis
+      - db
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
