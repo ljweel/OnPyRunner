@@ -7,8 +7,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - redis
-      - db
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -29,8 +31,10 @@ services:
       context: .
       dockerfile: worker/Dockerfile
     depends_on:
-      - redis
-      - db
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -44,6 +48,11 @@ services:
 
   redis:
     image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - ljweel-dev-network
 
@@ -58,6 +67,11 @@ services:
       POSTGRES_URL: ${POSTGRES_URL}
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
