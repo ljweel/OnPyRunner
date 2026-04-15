@@ -1,5 +1,6 @@
 from onpyrunner_shared.models.common import JobOutcome, JobResult, JobStatus
-from onpyrunner_shared.models.response import CompletedJobResponse, JobResponse
+from onpyrunner_shared.models.response import CompletedJobResponse
+
 from onpyrunner_worker.nsjail.result import NsJailResult
 
 
@@ -29,7 +30,7 @@ class ResultAnalyzer:
         else:
             return JobOutcome.UNKNOWN_ERROR
 
-    def analyze(self, job_id: str, raw_result: NsJailResult) -> JobResponse:
+    def analyze(self, job_id: str, raw_result: NsJailResult) -> CompletedJobResponse:
 
         return CompletedJobResponse(
             job_id=job_id,

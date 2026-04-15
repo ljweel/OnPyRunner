@@ -27,11 +27,9 @@ class Execution(Base):
     result_stored_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # 요청 정보
-    language: Mapped[str] = mapped_column(String, nullable=False, default="python3")
+    language: Mapped[str] = mapped_column(String, nullable=False)
     source_code: Mapped[str] = mapped_column(Text, nullable=False)
     stdin: Mapped[str] = mapped_column(Text, default="")
-    cpu_time_limit_ms: Mapped[int | None] = mapped_column(Integer)
-    memory_limit_mb: Mapped[int | None] = mapped_column(Integer)
 
     # 실행 결과
     status: Mapped[str] = mapped_column(String, nullable=False)

@@ -1,10 +1,12 @@
 import json
 import uuid
+from datetime import datetime, timedelta, timezone
 from typing import cast
 
 import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from onpyrunner_db.service import create_execution, update_execution
 from onpyrunner_shared.logger import setup
 from onpyrunner_shared.models.payload import JobExecutionPayload
 from onpyrunner_shared.models.request import ExecuteRequest
@@ -41,9 +43,17 @@ log = setup("api_server")
 @app.post("/execute", response_model=PendingJobResponse)
 async def execute(request: ExecuteRequest):
 
+    api_received_at = datetime.now(timezone(timedelta(hours=9)))
+
     # create job id
     job_id = str(uuid.uuid4())
     log.info("job created", extra={"jobId": job_id})
+    await create_execution(
+        job_id=job_id,
+        language=request.language,
+        source_code=request.source_code,
+        stdin=request.stdin or "",
+    )
 
     # create execution payload
     execution_payload = JobExecutionPayload(
@@ -52,6 +62,9 @@ async def execute(request: ExecuteRequest):
         source_code=request.source_code,
         stdin=request.stdin or "",
     )
+
+    queue_entered_at = datetime.now(timezone(timedelta(hours=9)))
+
     # enqueue job to redis queue
     redis_client.lpush(
         "queue:job_queue",  # queue name
@@ -69,6 +82,11 @@ async def execute(request: ExecuteRequest):
     )
 
     log.info("job enqueued", extra={"jobId": job_id})
+    await update_execution(
+        job_id=job_id,
+        api_received_at=api_received_at,
+        queue_entered_at=queue_entered_at,
+    )
     return pending_job_response
 
 
