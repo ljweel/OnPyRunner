@@ -38,6 +38,10 @@ COPY --from=builder /nsjail/nsjail /usr/bin/nsjail
 COPY shared/ /app/shared/
 RUN uv pip install --system /app/shared/
 
+# DB 패키지 설치 (추가)
+COPY db/ /app/db/
+RUN uv pip install --system /app/db/
+
 # Worker 패키지 설치
 COPY worker/ /app/worker/
 RUN uv pip install --system /app/worker/
