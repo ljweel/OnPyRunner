@@ -91,11 +91,9 @@ BASE_URL = "http://localhost:8000"
 
 load_dotenv()
 
-DB_URL = (
-    f"postgresql+psycopg2://"
-    f"{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}"
-    f"@localhost:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB_NAME')}"
-)
+DB_URL = os.getenv("SYNC_POSTGRES_URL")
+if DB_URL is None:
+    raise ValueError("SYNC_POSTGRES_URL 환경 변수가 설정되지 않았습니다.")
 helper = E2ETestHelper(BASE_URL, DB_URL)
 
 

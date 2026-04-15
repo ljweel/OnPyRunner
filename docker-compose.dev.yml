@@ -11,12 +11,8 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_DB_NAME: ${POSTGRES_DB_NAME}
+      POSTGRES_URL: ${POSTGRES_URL}
+      SYNC_POSTGRES_URL: ${SYNC_POSTGRES_URL}
     command: ["uvicorn", "onpyrunner_api.app:app", "--host", "0.0.0.0", "--port", "8000"]
 
     develop:
@@ -40,11 +36,7 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_DB_NAME: ${POSTGRES_DB_NAME}
+      POSTGRES_URL: ${POSTGRES_URL}
     command: ["python", "-m", "onpyrunner_worker.main"]
 
     develop:
@@ -65,7 +57,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      DATABASE_URL: ${DATABASE_URL}
+      POSTGRES_URL: ${POSTGRES_URL}
     ports:
       - "5432:5432"
     volumes:

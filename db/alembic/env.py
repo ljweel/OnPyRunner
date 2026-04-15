@@ -16,14 +16,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-def get_psycopg2_url():
+def get_psycopg2_url() -> str:
     load_dotenv()
-    user = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
-    host = os.getenv("POSTGRES_HOST")
-    port = os.getenv("POSTGRES_PORT")
-    db_name = os.getenv("POSTGRES_DB_NAME")
-    return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
+    url = os.getenv("SYNC_POSTGRES_URL")
+    if url is None:
+        raise ValueError("SYNC_POSTGRES_URL 환경 변수가 설정되지 않았습니다.")
+    return url
 
 
 # add your model's MetaData object here

@@ -94,6 +94,10 @@ pytest tests/ -m "not slow"
 
 # 전체 테스트
 pytest tests/
+
+# 로컬 db 테스트
+POSTGRES_HOST=localhost pytest tests/ -m "not slow"
+
 ```
 
 ## import 확인 (설치 검증)

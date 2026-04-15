@@ -6,12 +6,9 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 def get_database_url() -> str:
     load_dotenv()
-    user_name = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
-    host = os.getenv("POSTGRES_HOST")
-    port = os.getenv("POSTGRES_PORT")
-    db_name = os.getenv("POSTGRES_DB_NAME")
-    url = f"postgresql+asyncpg://{user_name}:{password}@{host}:{port}/{db_name}"
+    url = os.getenv("POSTGRES_URL")
+    if url is None:
+        raise ValueError("POSTGRES_URL 환경 변수가 설정되지 않았습니다.")
     return url
 
 
