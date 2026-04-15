@@ -6,7 +6,7 @@ import pytest
 import requests
 from dotenv import load_dotenv
 from onpyrunner_db.models import Execution
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, delete, select
 from sqlalchemy.orm import sessionmaker
 
 
@@ -97,6 +97,14 @@ DB_URL = (
     f"@localhost:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB_NAME')}"
 )
 helper = E2ETestHelper(BASE_URL, DB_URL)
+
+
+@pytest.fixture(autouse=True)
+def clean_up_db_table():
+    yield
+    with helper.test_session() as db:
+        db.execute(delete(Execution))
+        db.commit()
 
 
 def test_addition():
