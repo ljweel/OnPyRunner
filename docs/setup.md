@@ -107,3 +107,9 @@ python -c "from onpyrunner_shared.models import ExecuteRequest; print('shared OK
 python -c "from onpyrunner_api.app import app; print('api OK')"
 python -c "from onpyrunner_worker.analyzer import ResultAnalyzer; print('worker OK')"
 ```
+
+## 배포 내부 postgres 확인
+
+```bash
+docker compose exec db sh -c 'psql -U $POSTGRES_USER -d $POSTGRES_DB'
+```
