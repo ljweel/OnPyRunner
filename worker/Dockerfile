@@ -25,6 +25,11 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir uv
 
+# 파이썬 샌드박스용 라이브러리 복사
+RUN mkdir -p /opt/sandbox-python/lib && \
+    cp -r /usr/local/lib/python3.13 /opt/sandbox-python/lib/ && \
+    cp /usr/local/lib/libpython3.13.so.1.0 /opt/sandbox-python/lib/
+
 # nsjail 실행에 필요한 최소 런타임 라이브러리 설치
 RUN apt-get update && apt-get install -y \
     libprotobuf32 \
