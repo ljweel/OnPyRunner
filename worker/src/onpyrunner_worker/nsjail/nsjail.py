@@ -24,7 +24,7 @@ class NsJail:
         self.config_path: Path = CFG_PATH
         self.nsjail_path: Path = Path("/usr/bin/nsjail")
         self.base_sandbox_dir: Path = Path("/sandbox")
-        self.python_path: Path = Path("/usr/local/bin/python3")
+        self.python_path: Path = Path("/usr/local/bin/python3.13")
         self.job_id: str = job_id
 
     def _write_files(self, code_file: str, stdin: str) -> Iterable[Path]:
