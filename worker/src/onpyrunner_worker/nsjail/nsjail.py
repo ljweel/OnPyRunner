@@ -16,15 +16,23 @@ log = setup("nsjail")
 MAX_STDOUT_SIZE = 128 * 1024  # 128KB
 MAX_STDERR_SIZE = 128 * 1024  # 128KB
 
-CFG_PATH = Path(__file__).parent / "nsjail.cfg"
+RUNTIMES = {
+    "python": {
+        "bin": "/usr/local/bin/python3.13",
+        "cfg": Path(__file__).parent / "python.cfg",
+    },
+    "pypy": {
+        "bin": "/opt/runtime/pypy/bin/pypy3.11",
+        "cfg": Path(__file__).parent / "pypy.cfg",
+    },
+}
 
 
 class NsJail:
-    def __init__(self, job_id: str):
-        self.config_path: Path = CFG_PATH
+    def __init__(self, job_id: str, language: str):
+        self.runtime: dict = RUNTIMES[language]
         self.nsjail_path: Path = Path("/usr/bin/nsjail")
         self.base_sandbox_dir: Path = Path("/sandbox")
-        self.python_path: Path = Path("/usr/local/bin/python3.13")
         self.job_id: str = job_id
 
     def _write_files(self, code_file: str, stdin: str) -> Iterable[Path]:
@@ -65,10 +73,10 @@ class NsJail:
         return [
             self.nsjail_path,
             "--config",
-            self.config_path,
+            self.runtime["cfg"],
             "-q",
             "--",
-            self.python_path,
+            self.runtime["bin"],
             code_path,
         ]
 

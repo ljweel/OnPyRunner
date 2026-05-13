@@ -39,3 +39,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - DB 통합 테스트 추가
 - docker compose의 healthcheck로 db/redis 준비 완료 후 api/worker 시작 보장
 - DB 연결 환경 변수를 단일 URL로 통합
+
+## [1.2.0] - 2026-05-13
+
+### Added
+
+- PyPy 실행 언어 지원 추가
+- Worker 이미지에 PyPy 3.11 런타임 추가
+- PyPy 실행 결과 DB 저장을 검증하는 E2E 테스트 추가
+
+### Changed
+
+- nsjail 설정을 Python/PyPy 런타임별 config로 분리
+- Worker가 실행 payload의 language 값을 기준으로 nsjail 런타임을 선택하도록 변경
+- Python 런타임 파일을 `/opt/runtime/python` 구조로 정리
