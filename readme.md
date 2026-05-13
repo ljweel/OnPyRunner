@@ -17,10 +17,9 @@ http://localhost:8000/jobs/{jobId}
 ## 현재 기능
 - Python 코드 격리 실행 및 실행 시간/메모리 제한
 - Reverse Proxy 기반 API로 web에서 실행
+- PyPy 지원
 
 ## 추가될 기능
-- 실행 타임라인 분석 (E2E latency 분해)
 - 실행 로그 시각화
-- 다른 언어 지원
 - 실행 결과 캐싱 전략
 - 실행 CT를 실행 서버로 분리 및 worker 구조 개선 
