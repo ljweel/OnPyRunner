@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 class Language(str, Enum):
     python = "python"
+    pypy = "pypy"
 
 
 class JobStatus(str, Enum):

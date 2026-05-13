@@ -22,8 +22,10 @@ async def worker_init(redis_client: Redis):
         print("Redis not connected to worker")
 
 
-def run_sandboxed_task(job_id: str, source_code: str, stdin: str) -> NsJailResult:
-    runner = NsJail(job_id)
+def run_sandboxed_task(
+    job_id: str, source_code: str, stdin: str, language: str
+) -> NsJailResult:
+    runner = NsJail(job_id, language)
     return runner.execute(source_code, stdin)
 
 
@@ -36,6 +38,7 @@ async def worker_loop(redis_client: Redis, log: logging.Logger):
         job_id = execution_payload_dict["job_id"]
         source_code = execution_payload_dict["source_code"]
         stdin = execution_payload_dict["stdin"]
+        language = execution_payload_dict["language"]
 
         await update_execution(
             job_id=job_id,
@@ -58,8 +61,7 @@ async def worker_loop(redis_client: Redis, log: logging.Logger):
             log.info("sandbox start", extra={"jobId": job_id})
 
             execution_started_at = datetime.now(timezone.utc)
-
-            nsjail_result = run_sandboxed_task(job_id, source_code, stdin)
+            nsjail_result = run_sandboxed_task(job_id, source_code, stdin, language)
 
             await update_execution(
                 job_id=job_id,

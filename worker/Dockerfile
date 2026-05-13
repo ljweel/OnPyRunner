@@ -18,17 +18,38 @@ RUN git clone https://github.com/google/nsjail.git /nsjail && \
     cd /nsjail && \
     make
 
-# Stage 2: Final Image
+# Stage 2: Prepare pypy binary
+FROM pypy:3.11-slim AS pypy-provider
+
+# pypy 런타임 구조 생성
+RUN mkdir -p /opt/runtime/pypy/bin && \
+    mkdir -p /opt/runtime/pypy/lib
+
+
+# Stage 3: Final Image
 FROM python:3.13-slim
 
 WORKDIR /app
 
 RUN pip install --no-cache-dir uv
 
-# 파이썬 샌드박스용 라이브러리 복사
-RUN mkdir -p /opt/sandbox-python/lib && \
-    cp -r /usr/local/lib/python3.13 /opt/sandbox-python/lib/ && \
-    cp /usr/local/lib/libpython3.13.so.1.0 /opt/sandbox-python/lib/
+# python 런타임 구조 생성
+RUN mkdir -p /opt/runtime/python/bin && \
+    mkdir -p /opt/runtime/python/lib
+
+# python binary
+RUN cp /usr/local/bin/python3.13 /opt/runtime/python/bin/
+
+# stdlib + extension modules
+RUN cp -r /usr/local/lib/python3.13 /opt/runtime/python/lib/
+
+# libpython shared object
+RUN cp /usr/local/lib/libpython3.13.so.1.0 /opt/runtime/python/lib/
+
+
+# pypy 런타임 복사
+COPY --from=pypy-provider /opt/pypy/ /opt/runtime/pypy/
+
 
 # nsjail 실행에 필요한 최소 런타임 라이브러리 설치
 RUN apt-get update && apt-get install -y \

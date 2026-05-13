@@ -334,3 +334,23 @@ def test_timestamp_order_on_slow_execution():
         execution.execution_finished_at - execution.execution_started_at
     ).total_seconds()
     assert diff >= 1.0
+
+
+def test_pypy_db_integration():
+    """pypy 실행 후 DB에 결과가 제대로 저장되는지"""
+    job_id = helper.post_execute(
+        {
+            "language": "pypy",
+            "source_code": "a, b = map(int, input().split()); print(a + b)",
+            "stdin": "1 2",
+        }
+    )
+    helper.get_job_result(job_id)
+
+    execution = helper.get_execution_from_db(job_id)
+
+    assert execution is not None
+    assert execution.language == "pypy"
+    assert execution.status == "COMPLETED"
+    assert execution.stdout is not None and execution.stdout.strip() == "3"
+    assert execution.exit_code == 0
